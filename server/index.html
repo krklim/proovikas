@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Sample Site</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+		integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<style>
+		body {
+			padding-top: 50px;
+		}
+	</style>
+</head>
+
+<body>
+	<h2>Hi Users Choose your file and Click upload.</h2>
+	<!-- Input Form Elements HTML 5 -->
+	<input id="fileupload" accept=".txt" type="file" name="fileupload" />
+	<button id="upload-button" onclick="uploadFile()"> Upload file </button>
+
+	<div className="input-group mb-3">
+		<input type="file" className="form-control" id="fileupload"></input>
+		<label className="input-group-text" htmlFor="fileupload" onClick="uploadFile()">Upload</label>
+	  </div>
+
+	<!-- File Upload Logic JavaScript -->
+	<script>
+		
+		async function uploadFile() {
+			//creating form data object and append file into that form data
+			var textString = await fileupload.files[0].text();
+			console.log(textString.split(/[\r\n]+/g)[0]);
+			console.log(textString.split(/[\r\n]+/g)[1]);
+			console.log(textString.split(/[\r\n]+/g)[1].split(";"));
+			for (let i = 1; i < textString.length; i++) {
+				console.log(textString[i])
+				var patient = textString[i].split(";")
+				//network request using POST method of fetch
+				await fetch('localhost:5000/patients', {
+					method: "POST",
+					body: JSON.stringify({ code: patient.code, dep: patient.dep, visit_time: patient.visit_time, first_name: patient.first_name, last_name: patient.last_name, email: patient.email, id_code: patient.id_code })
+				});
+			}
+
+			alert('You have successfully uploaded the file!');
+		}
+
+		
+	</script>
+
+</body>
+<html>
+
+</html>
