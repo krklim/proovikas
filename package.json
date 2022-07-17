@@ -6,9 +6,11 @@
   "scripts": {
     "dev:watch": "node ./node_modules/parcel-bundler/bin/cli watch ./src/index.js --target node --out-dir ./dist/",
     "dev:hot-reload": "node ./node_modules/nodemon/bin/nodemon --watch ./dist/ ./dist/index.js",
-    "start": "node ./node_modules/npm-run-all/bin/npm-run-all -p -r dev:watch dev:hot-reload",
     "build": "node ./node_modules/parcel-bundler/bin/cli build ./src/index.js --target node --out-dir ./dist/",
-    "lint": "node ./node_modules/eslint/bin/eslint . --ext .js --fix"
+    "lint": "node ./node_modules/eslint/bin/eslint . --ext .js --fix",
+    "client": "npm start --prefix client",
+    "server": "node server/index.js",
+    "start": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
   },
   "repository": {
     "type": "git",
@@ -26,6 +28,7 @@
     "parcel-bundler": "^1.12.5"
   },
   "dependencies": {
+    "concurrently": "^7.2.2",
     "cors": "^2.8.5",
     "express": "^4.18.1",
     "pg": "^8.7.3"

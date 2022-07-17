@@ -1,83 +1,61 @@
 import React, { Fragment, useState } from "react";
 
+
 const InputPatients = () => {
-	const [first_name] = useState("");
+	const [isLoading, setIsLoading] = useState(false);
 	let fileupload;
 
 	const uploadFile = async e => {
-		e.preventDefault();
-		var textString = await fileupload.text();
-		console.log(textString)
-		let dataRows = textString.split(/[\r\n]+/g);
-		console.log(dataRows.length);
-		dataRows.shift();
-		let jsonBody = [];
-		let counter = 0;
-		dataRows.forEach(async row => {
-			var p = row.split(";");
-			let patient = {
-				code: p[0],
-				dep: p[1],
-				visit_time: p[2],
-				first_name: p[3],
-				last_name: p[4],
-				email: p[5],
-				id_code: p[6]
-			}
-			jsonBody.push(patient);
-			counter += 1;
-			if (counter === 500) {
-				counter = 0;
-				let stringifiedBody = JSON.stringify(jsonBody);
-				jsonBody = [];
-				await fetch('http://localhost:5000/patients', {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: stringifiedBody
-				});
-			}
-			//network request using POST method of fetch
-
-		});
-		
-		if(counter > 0){
-			let stringifiedBody = JSON.stringify(jsonBody);
-			await fetch('http://localhost:5000/patients', {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: stringifiedBody
-				});
+		if (!fileupload) {
+			return;
 		}
-		alert('You have successfully uploaded the file!');
-		// window.location = "/";
+		setIsLoading(true);
+		e.preventDefault();
+		var algus = Date.now()
+		const formData = new FormData();
+		formData.append("textFile", fileupload);
+
+		fetch('http://localhost:5000/upload', {
+			method: "post",
+			body: formData
+		}).then(res => {
+			var vahe = (Date.now() - algus) / 1000
+			setIsLoading(false);
+			alert(`You have successfully uploaded the file in ${vahe} seconds}!`);
+			window.location = "/";
+		})
 	}
-	
+
 	const handleChange = (e) => {
 		const [file] = e.target.files;
-		console.log(file);
 		fileupload = file;
 	};
 
-	return (
-		<Fragment>
-			<h1 className="text-center mt-5">Pern Patients List</h1>
-			<div className="input-group mb-3">
-				<input type="file" className="form-control" id="fileupload" onChange={handleChange}></input>
-				<button id="upload-button" type="button" onClick={uploadFile} className="btn btn-primary">Click to upload</button>
-			</div>
-			
-
-			{/* <form className="d-flex mt-5" onSubmit={onSubmitForm}>
-				<input
-					type="text"
-					className="form-control"
-					value={first_name}
-					onChange={e => setDescription(e.target.value)}
-				/>
-				<button className="btn btn-success">Add</button>
-			</form> */}
-		</Fragment>
-	);
+	if (!isLoading) {
+		return (
+			<Fragment>
+				<h1 className="text-center mt-5">Patients Data Proovitöö</h1>
+				<div className="input-group mb-3">
+					<input type="file" accept=".txt" className="form-control ml-5 mr-3 col-3" id="fileupload" onChange={handleChange}></input>
+					<button id="upload-button" type="button" onClick={uploadFile} className="btn btn-primary">Click to upload</button>
+				</div>
+			</Fragment>
+		);
+	} else {
+		return (
+			<Fragment>
+				<h1 className="text-center mt-5">Patients Data Proovitöö</h1>
+				<div className="input-group mb-3">
+					<input type="file" accept=".txt" className="form-control ml-5 mr-3 col-3" id="fileupload" onChange={handleChange}></input>
+					<div className="d-flex justify-content-center text-primary">
+						<div className="spinner-border" role="status">
+							<span className="sr-only">Loading...</span>
+						</div>
+					</div>
+				</div>
+			</Fragment>
+		)
+	}
 };
 
 export default InputPatients;

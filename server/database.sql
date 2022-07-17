@@ -8,7 +8,7 @@ CREATE DATABASE patients;
 \c patients
 
 -- Create our table if it doesn't already exist (IF NOT EXISTS)
-CREATE TABLE patients
+CREATE TABLE IF NOT EXISTS patients
 (
     patient_id serial PRIMARY KEY,
     code VARCHAR(256),
@@ -23,3 +23,16 @@ CREATE TABLE patients
 -- Changes the owner of the table to postgres which is the default when installing postgres
 ALTER TABLE patients
     OWNER to postgres;
+
+-- Search for starting with id_code
+SELECT * FROM patients WHERE id_code LIKE 'stringtosearchfor%'
+
+-- get count of all rows in db
+SELECT COUNT(*) as rows FROM patients;
+
+-- Get top 10 most common id codes
+SELECT id_code, COUNT(*) AS counted
+FROM   patients
+GROUP  BY id_code
+ORDER  BY counted DESC
+LIMIT  10;
