@@ -7,7 +7,7 @@ const fileUpload = require("express-fileupload");
 const readline = require("readline");
 const { Duplex } = require('stream');
 
-const text = `CREATE TABLE IF NOT EXISTS "patients"
+const text = `CREATE TABLE IF NOT EXISTS patients
 (
     patient_id serial PRIMARY KEY,
     code VARCHAR(256),
@@ -21,7 +21,7 @@ const text = `CREATE TABLE IF NOT EXISTS "patients"
 
 pool.query(text).then(result => {
 	if (result) {
-		console.log('Database initialized');
+		console.log('Table initialized');
 	}
 })
 
@@ -165,7 +165,7 @@ try {
 
 //search by id_code
 try {
-	app.get("/patients/:searchString", async (req, res) => {
+	app.get("/patients/:offset/:searchString", async (req, res) => {
 		const { offset, searchString } = req.params;
 		const allPatients = await pool.query(`SELECT * FROM patients WHERE id_code LIKE '${searchString}%' ORDER BY patient_id ASC OFFSET ${offset} LIMIT 50`);
 
